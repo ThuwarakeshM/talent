@@ -11,6 +11,9 @@ router.register('telephone', views.TelephoneViewSet)
 router.register('web', views.WebViewSet)
 router.register('advertisement', views.AdvertisementViewSet)
 router.register('application', views.ApplicationViewSet)
+router.register('following', views.FollowingViewSet)
+router.register('interview', views.InterviewViewSet)
+
 urlpatterns = [
     path('', include(router.urls)),
 ]

@@ -108,9 +108,23 @@ class Application(models.Model):
 
 class Following(models.Model):
     applicant = models.ForeignKey(Applicant, on_delete=models.CASCADE)
-    company = models.ForeignKey(Publisher, on_delete=models.CASCADE)
+    publisher = models.ForeignKey(Publisher, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.applicant.first_name \
                + ' following ' \
-               + self.company.business_name
+               + self.publisher.business_name
+
+
+class Interview(models.Model):
+    application = models.ForeignKey(Application, on_delete=models.CASCADE)
+    datetime = models.DateTimeField(blank=False)
+    venue = models.TextField(blank=False)
+    description = models.TextField(blank=False)
+
+    def __str__(self):
+        return self.application.advertisement.title \
+               + '@' \
+               + self.application.advertisement.publisher \
+               + ' for ' \
+               + self.application.applicant.first_name

@@ -2,7 +2,8 @@ from django.shortcuts import render
 from rest_framework import viewsets, permissions
 from rest_framework.parsers import MultiPartParser, FormParser
 
-from core.permissions import *
+from core.permissions import IsPublisherOrReadOnly, IsOwnerOrReadOnly, IsApplicantOrReadOnly, \
+    IsApplicationPublisherOrReadOnly
 from core.serializers import *
 from .models import *
 
@@ -73,8 +74,31 @@ class ApplicationViewSet(viewsets.ModelViewSet):
     queryset = Application.objects.all()
     serializer_class = ApplicationSerializer
     parser_classes = (MultiPartParser, FormParser)
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,
+                          IsApplicantOrReadOnly)
 
     def perform_create(self, serializer):
         serializer.save(advertisement=Advertisement.objects.get(pk=self.request.data['advertisement']),
                         applicant=Applicant.objects.get(user=self.request.user),
                         cv=self.request.data['cv'])
+
+
+class FollowingViewSet(viewsets.ModelViewSet):
+    queryset = Following.objects.all()
+    serializer_class = FollowingSerializer
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,
+                          IsApplicantOrReadOnly)
+
+    def perform_create(self, serializer):
+        serializer.save(applicant=Applicant.objects.get(user=self.request.user),
+                        publisher=Publisher.objects.get(pk=self.request.data['publisher']))
+
+
+class InterviewViewSet(viewsets.ModelViewSet):
+    queryset = Interview.objects.all()
+    serializer_class = InterviewSerializer
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,
+                          IsApplicationPublisherOrReadOnly)
+
+    def perform_create(self, serializer):
+        serializer.save(application=Application.objects.get(pk=self.request.data['application']))

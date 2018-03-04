@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
-from .models import Publisher, Application, Applicant, Telephone, Web, Advertisement
+from .models import Publisher, Application, Applicant, Telephone, Web, Advertisement, Following, Interview
 
 
 class PublisherSerializer(serializers.HyperlinkedModelSerializer):
@@ -89,3 +89,20 @@ class ApplicationSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Application
         fields = ('url', 'id', 'advertisement', 'applicant', 'cv')
+
+
+class FollowingSerializer(serializers.HyperlinkedModelSerializer):
+    applicant = serializers.ReadOnlyField(source='applicant.first_name')
+    publisher = serializers.IntegerField(source='publisher.id')
+
+    class Meta:
+        model = Following
+        fields = ('url', 'id', 'applicant', 'publisher')
+
+
+class InterviewSerializer(serializers.HyperlinkedModelSerializer):
+    application = serializers.IntegerField(source='application.id')
+
+    class Meta:
+        model = Interview
+        fields = ('url', 'id', 'datetime', 'venue', 'description', 'application')
